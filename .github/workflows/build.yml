@@ -17,7 +17,7 @@ jobs:
 
       - name: Extract project archive
         run: |
-          archive="$(find . -maxdepth 1 -type f -iname 'YasinWidgetLauncher*.zip' | head -n 1)"
+          archive="$(find . -maxdepth 1 -type f \\( -iname 'YasinWidgetLauncher*.zip' -o -iname 'yasin_launcher_restored.zip' \\) | head -n 1)"
           if [ -z "$archive" ]; then
             echo "Не найден архив YasinWidgetLauncher*.zip в корне репозитория"
             exit 1
