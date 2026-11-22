@@ -30,6 +30,21 @@ jobs:
             echo "PROJECT_DIR=project" >> "$GITHUB_ENV"
           fi
 
+      - name: Patch Kotlin compile issues
+        run: |
+          MAIN_KT="$PROJECT_DIR/app/src/main/java/com/aktobe/yasinlauncher/MainActivity.kt"
+          BUILD_FILE="$PROJECT_DIR/app/build.gradle.kts"
+          if [ ! -f "$MAIN_KT" ]; then
+            echo "Не найден MainActivity.kt: $MAIN_KT"
+            exit 1
+          fi
+          sed -i 's/info\.loadBanner(pm)/info.activityInfo.loadBanner(pm)/' "$MAIN_KT"
+          if ! grep -q 'androidx.lifecycle:lifecycle-runtime-ktx' "$BUILD_FILE"; then
+            sed -i '/^dependencies {/a\    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")' "$BUILD_FILE"
+          fi
+          echo "Проверка исправлений:"
+          grep -n 'loadBanner\|lifecycle-runtime-ktx' "$MAIN_KT" "$BUILD_FILE"
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
